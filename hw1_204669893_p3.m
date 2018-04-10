@@ -24,13 +24,13 @@ c = (1/d)*sqrt((-d + r1 +r2)*(d - r1 + r2)*(d + r1 - r2)*(d + r1 + r2));
 AREA = (r1^2)*acos((d^2 + r1^2 - r2^2)/(2*d*r1)) ...
         + (r2^2)*acos((d^2 - r1^2 + r2^2)/(2*d*r2))...
         - (d/2)*c;
-    fprintf('\nx1 = %3.2f\n',x1)
-    fprintf('y1 = %3.2f\n',y1)
-    fprintf('r1 = %3.2f\n',r1)
-    fprintf('x1 = %3.2f\n',x2)
-    fprintf('y1 = %3.2f\n',y2)
-    fprintf('r1 = %3.2f\n',r2)
-    fprintf('Area = %5.4f\n',AREA)
+    fprintf('\nx1 = %15.2f\n',x1)
+    fprintf('y1 = %15.2f\n',y1)
+    fprintf('r1 = %15.2f\n',r1)
+    fprintf('x1 = %15.2f\n',x2)
+    fprintf('y1 = %15.2f\n',y2)
+    fprintf('r1 = %15.2f\n',r2)
+    fprintf('Area = %15.4f\n',AREA)
    
 
 
