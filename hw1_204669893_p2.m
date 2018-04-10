@@ -1,7 +1,16 @@
+% This is the source code for problem 2
+% The  program prompts user input for the semi major and minor
+% axis of an ellpise and impliments several methodes to find the 
+% perimeter of the described ellipse.
+
+% prompt user for input
 a = input('please input a: ');
 b = input('please input b: ');
 
+% h is calculated
 h = ((a - b)/(a +b))^2;
+
+% the methods for calculating perimeter are performed here
 P1 = pi*(a + b);
 P2 = pi*sqrt(2*(a^2 + b^2));
 P3 = pi*sqrt(2*(a^2 + b^2) - ((a - b)^2)/2);
@@ -11,6 +20,7 @@ P6 = P1*((64 - 3*h^2)/(64 - 16*h));
 P7 = P1*((256 - 48*h - 21*h^2)/(256 - 112*h + 3*h^2));
 P8 = P1*((3 - sqrt(1 - h))/2);
 
+% results printed to command line
 fprintf('P1 = %15.6f\n',P1);
 fprintf('P2 = %15.6f\n',P2);
 fprintf('P3 = %15.6f\n',P3);
