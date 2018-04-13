@@ -4,6 +4,7 @@
 % perimeter of the described ellipse.
 
 % prompt user for input
+clc
 a = input('please input a: ');
 b = input('please input b: ');
 
@@ -21,7 +22,7 @@ P7 = P1*((256 - 48*h - 21*h^2)/(256 - 112*h + 3*h^2));
 P8 = P1*((3 - sqrt(1 - h))/2);
 
 % results printed to command line
-fprintf('P1 = %15.6f\n',P1);
+fprintf('\nP1 = %15.6f\n',P1);
 fprintf('P2 = %15.6f\n',P2);
 fprintf('P3 = %15.6f\n',P3);
 fprintf('P4 = %15.6f\n',P4);

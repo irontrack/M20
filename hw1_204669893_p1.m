@@ -9,6 +9,8 @@
 % of the solid which encapsulates it.
 
 % R_U is the radius of the unit sphere
+
+clc
 R_U = 1;
 
 % tetrahedron properties initialized
@@ -49,6 +51,6 @@ fprintf('%12.6f',O(3));
 fprintf('\nDodecahedron%12.6f',D(1));
 fprintf('%12.6f',D(2));
 fprintf('%12.6f',D(3));
-fprintf('\nIscosahedron%12.6f',I(1));
+fprintf('\nIcosahedron %12.6f',I(1));
 fprintf('%12.6f',I(2));
-fprintf('%12.6f',I(3));
+fprintf('%12.6f\n',I(3));
