@@ -158,5 +158,27 @@ YEAR = 0;
     delta_j = j - 2415021;
     
     L = sin(pi*mod(delta_j,29.530588853)/29.530588853)^2;
+    
+    % the next few lines compute the rate to determine if the 
+    % moon is waxing or waning.
+    
+    delta_jp = delta_j - 1;
+    L_p = sin(pi*mod(delta_jp,29.530588853)/29.530588853)^2;
+    rate = L- L_p;
+   
+    %convert to percent
+   L = L*100; 
+   %displaying results
+    fprintf('\n\n%s','');   
+    fprintf('%s',month, ' ',day,' ', year,':');
 
-L
+    fprintf('\n%s','Illumination = ');
+    fprintf('%4.1f',L);
+    fprintf('%s\n',' percent');
+
+    if rate > 0
+        fprintf('%s\n','Waxing')
+    else
+        fprintf('%s\n','Waning')
+    end
+
