@@ -27,6 +27,8 @@ N = zeros(1,1e4);
      
  end
  
-median(N)
+med = median(N);
+
+fprintf('Median Number of People: %3.2i\n',med)
 histogram(N,'BinWidth',1)
 axis([0,100,0,350])
