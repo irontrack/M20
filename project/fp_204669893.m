@@ -1,0 +1,164 @@
+% main script fp_204669893
+
+clear
+
+N = 100;
+rho_0 = 100;
+m = rho_0/(11*N);
+kc = 1000;
+mu = 0.1;
+xmax = 1;
+ymax = 1;
+h = .1;
+nx = floor(xmax/h);
+ny = floor(ymax/h);
+dx = xmax/nx;
+dy = ymax/ny;
+dt = 0.001;
+T = 2;
+force_ext = [0 -9.8]; 
+% initialize particle struct with random startign locations
+particles = particle_struct(N,xmax,ymax);
+% CAPTURES THE FIRST FRAME WITH INITIAL CONDITIONS
+ X = zeros(N,1);
+Y = zeros(N,1);
+
+for k = 1:N
+    X(k) = particles{k}.pos(1);
+    Y(k) = particles{k}.pos(2);
+
+end
+scatter(X,Y)
+hold on
+plot([0,1],[0,0],'r',[1,1],[0,1],'r',[1,0],[1,1],'r',[0,0],[1,0],'r')
+axis([-0.1,xmax + 0.1,-0.1,ymax + 0.1]);
+ax = gca;
+ax.NextPlot = 'replaceChildren';
+F(1) = getframe(ax); 
+%   SIMULATION BEGINS
+for t = 1:T/dt;
+    
+    % initialize bins and sort particles
+    bins = bins_struct(particles,dx,dy,nx,ny,ymax);
+
+    % locate neigbors for each particle
+    % and calculate density for each particle
+    for k = 1:N
+
+        temp = [];
+        binNum = get_binNum(particles{k}.pos(1),particles{k}.pos(2),dx,dy,ymax,ny);
+        % Finds Neighbors
+        for i = 1:(length(bins{binNum}.adjacentBins) + 1)
+            % FINDS NEIGHBORS IN ADJACENT BINS FIRST
+            if i <= length(bins{binNum}.adjacentBins)
+
+                zt = bins{binNum}.adjacentBins(i);
+
+                for j = 1:length(bins{zt}.particleIDs)
+                    kt = bins{zt}.particleIDs(j);
+                    delta_x = particles{kt}.pos(1) - particles{k}.pos(1);
+                    delta_y = particles{kt}.pos(2) - particles{k}.pos(2);
+                    if h > sqrt(delta_x^2 + delta_y^2)
+                        temp = [temp kt];
+                    end
+                end
+            % LOOKS FOR NEIGHBORS IN THE SAME BIN AS ITSELF    
+            else
+
+                for j = 1:length(bins{binNum}.particleIDs)
+                    kt = bins{binNum}.particleIDs(j);
+                    if kt ~= k
+                        delta_x = particles{kt}.pos(1) - particles{k}.pos(1);
+                        delta_y = particles{kt}.pos(2) - particles{k}.pos(2);
+                        if h > sqrt(delta_x^2 + delta_y^2)
+                            temp = [temp kt];
+                        end
+                    end
+                end
+
+            end
+
+        end
+        particles{k}.neighbors = temp;
+        
+        % now finds the density of each particle.
+        temp = 0;
+        for j = 1:length(particles{k}.neighbors)
+            kt = particles{k}.neighbors(j);
+            delta_x = particles{kt}.pos(1) - particles{k}.pos(1);
+            delta_y = particles{kt}.pos(2) - particles{k}.pos(2);
+            temp = temp + (h^2 - (delta_x^2 + delta_y^2))^3;
+        end
+        particles{k}.density = (4*m/(pi*h^2)) + (4*m/(pi*h^8))*temp;
+
+    end
+    % The following loop and and few lines calculateds viscous and 
+    % presure forces on particle k
+       for k = 1:N 
+            rho_k = particles{k}.density;
+            sum_fkj = 0;
+            for j = 1:length(particles{k}.neighbors)
+
+                % record x and y of particles j and k for consolodation
+
+                xk = particles{k}.pos;
+                xj = particles{particles{k}.neighbors(j)}.pos;
+
+                 % record u and v (Vx and Vy) of particles j and k for consolodation
+
+                vk = particles{k}.vel;
+                vj = particles{particles{k}.neighbors(j)}.vel;
+                % get rho j
+                rho_j = particles{particles{k}.neighbors(j)}.density;
+                % get qkj
+                delta_x = xj(1) - xk(1);
+                dleta_y = xj(2) - xk(2);
+                qkj = sqrt(delta_x^2 + delta_y^2)/h;
+                if qkj == 0
+                    qkj = 0.0001;
+                   
+                end
+
+                % USE THE TO FIND Fkj
+                fkj = (m/(pi*rho_j*h^4))*(1 - qkj)*(15*kc*(rho_k + rho_j - ...
+                            2*rho_0)*((1 - qkj)/qkj)*(xk - xj) - 40*mu*(vk - vj));
+                sum_fkj = sum_fkj + fkj;
+
+
+            end
+            particles{k}.force =  force_ext*rho_k + sum_fkj;
+       end
+    % integrate and update velocity and position
+    o_particles = particles;
+    particles = update_particles(particles,dt,N,xmax,ymax);
+    
+    if mod(t,42) == 0 
+        X = zeros(N,1);
+        Y = zeros(N,1);
+
+        for k = 1:N
+            X(k) = particles{k}.pos(1);
+            Y(k) = particles{k}.pos(2);
+
+        end
+
+        scatter(X,Y)
+        hold on
+        plot([0,1],[0,0],'r',[1,1],[0,1],'r',[1,0],[1,1],'r',[0,0],[1,0],'r')
+        axis([-0.1,xmax + 0.1,-0.1,ymax + 0.1]);
+        ax = gca;
+        ax.NextPlot = 'replaceChildren';
+        F(floor(t/42) + 1) = getframe(ax);  
+    end
+end
+
+
+% vid = VideoWriter('fountain_no_gravity','MPEG-4');
+% vid.FrameRate = 24;
+% vid.Quality = 100;
+% open(vid)
+% writeVideo(vid,F)
+% close(vid)
+
+
+
